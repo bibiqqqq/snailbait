@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /*作者：但成立
+     *时间：2017年7月3日
+对象执行之前尤其代理对象代为执行实现深入的交互功能
+     */
+     var Flower = function (type, price) {
+       this.type = type;
+       this.price = price;
+     }
+     Flower.prototype.buy = function () {
+       console.log("你购买了"+this.type+"请付"+this.price+"元");
+     }
+     var flower = new Flower("rose",99);
+     flower.buy();
+     var dcl = {
+       name:"但成立",
+       age:20,
+       city:"南昌",
+       sendFlower:function (target) {
+         target.receiveFlower();
+       }
+     }
+     var xxx = {
+       name:"XXX",
+       age:20,
+       receiveFlower:function () {
+         console.log("收到了花");
+       },
+       listenGoodMood:function (fn) {
+         console.log("心情不好");
+         setTimeout(function () {
+         console.log("心情好了，该约的约");
+          fn();
+        },  5000)
+       }
+     }
+     var xiaohong = {
+       name:"小红",
+       nickname:"送花使者",
+       //接口
+       receiveFlower:function () {
+         xxx.listenGoodMood(function () {
+           xxx.receiveFlower();
+         });
+       }
+     }
+     dcl.sendFlower(xiaohong);
+
+  </script>
+</body>
+</html>
