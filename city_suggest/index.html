@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>城市搜索 Ajax Suggestion</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    html {
+        background: #ffc600;
+        font-family: 'helvetica neue';
+        font-size: 20px;
+        font-weight: 200;
+    }
+    .search-form {
+        max-width: 400px;
+        margin:50px auto;
+    }
+    input {
+        width: 100%;
+        padding: 20px;
+    }
+    input.search {
+        margin: 0;
+        text-align: center;
+        outline:0;
+        border: 10px solid #F7F7F7;
+        width: 120%;
+        left: -10%;
+        position: relative;
+        top: 10px;
+        z-index: 2;
+        border-radius: 5px;
+        font-size: 40px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.12),
+        inset 0 0 2px rgba(0,0,0,0.19);
+    }
+    .suggestions{
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+    .suggestions li{
+      background: white;
+      list-style: none;
+      border-bottom: 1px solid #d8d8d8;
+      box-shadow: 0 0 10px rgba(0,0,0,0.14);
+      padding: 20px;
+      transition: background .2s;
+      display: flex;
+      justify-content: space-between;
+      text-transform: capitalize;
+    }
+    /*斑马式选择*/
+    .suggestions li:nth-child(even){
+      transform: perspective(100px) rotateX(3deg) translateY(2px) scale(1.001);
+      /*渐变 颜色过渡，让背景更多彩
+      渐变的方向 从上往下
+      代替图片，
+      渐变的方向
+      color stop
+      */
+      background: linear-gradient(to bottom, #fff 0%,#EFEFEF 100%);
+    }
+    .suggestions li:nth-child(odd){
+      transform: perspective(100px) rotateX(-3deg) translateY(3px);
+      background: linear-gradient(to top, #ffffff 0%,#EFEFEF 100%)
+    }
+    span.population{
+      font-size: 15px;
+    }
+    .details{
+      text-align: center;
+      font-size: 15px;
+    }
+    h1{
+      background: #ffc600;
+    }
+    .love{
+      text-align: center;
+    }
+    a{
+      color: black;
+      background: rgba(0,0,0,.1);
+      text-decoration: none;
+    }
+    </style>
+</head>
+<body>
+<!-- google baidu 搜索建议 提升用户查找的体验。
+70年代服务器的时代
+80年代个人电脑
+90 web site 搜索引搜
+2007 iphone面市 移动互联网
+2017 人工智能 机器学习
+区分一张猫 和  狗
+举了很多例子
+数据库 mongodb  大数据
+算法  1-100%
+交互体验变  声音
+声音交互->讯飞接口node.js sdk(方言,性别) 文字最近的饭店->
+数据库 查找出结果 范家农庄 -> 讯飞接口转变成语音->听到
+web +接口  -->
+<div class="container">
+    <form action="" class="search-form">
+        <input type="search" class="search"
+         placeholder="请输入城市名查找"/>
+        <ul class="suggestions">
+            <li>Filter for a city</li>
+            <li>or a state</li>
+        </ul>
+    </form>
+</div>
+<script>
+  // 数据在哪？
+  const cities = [];
+  const dataUrl = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  // 请求数据？变成web server 发出http请求 对方返回json
+  // 使用json做接下来的逻辑
+  // js主动拉去数据 ajax XMLHttpRequest jquery $.get(JSON)
+  // ip->gist.githubusercontent 网站 http请求
+  fetch(dataUrl) //promise 需要花时间 返回二进制流
+  // http相应是一块块数据相应的blob 一个数据块
+  // on data 事件 on end http 请求将会关闭
+  // Promise 异步 then=等我
+  .then(blob=>blob.json()) //取出json 二进制数据块，转成json
+  .then(data => {
+    // console.log(data);
+    cities.push(...data);
+    console.log(cities);
+    // ...在es6表示展开运算 将数组推平，
+    document.querySelector('.suggestions').innerHTML = data.map(item => {
+      return `
+        <li>${item.city}</li>
+      `
+    }).join('');
+  })
+  console.log(cities);
+  document.querySelector('.search')
+      .addEventListener('input',function () {
+        // 输入时会出发的事件，动态的suggest
+        // 输入框的值是？
+        console.log(cities);
+        let searchStr = this.value.trim();
+        console.log(searchStr);
+        if(searchStr.length>0){
+              // 匹配
+              // 输入的值是否是数组某项的city的一部分？
+              // 过滤数组
+              // 循环 命令式编程
+              // 函数式编程 语意话 filter
+              document.querySelector('.suggestions')
+              .innerHTML = cities.filter(city=>{
+                if(city.city.toLowerCase().indexOf(searchStr.toLowerCase())>-1){
+                return true;
+              }else{
+                return false;
+              }
+            }).map(item=>{
+              return `
+              <li>${item.city}</li>
+              `
+            }).join('');
+        }
+        // 数据在哪？要我想要的？
+        // 更新列表
+      },false)
+</script>
+</body>
+</html>
